@@ -34,13 +34,28 @@ Type `/quit` to exit. Restarting with the same conversation id continues that co
 
 Connection settings can be overridden with environment variables: `OLLAMA_BASE_URL` (default `http://localhost:11434`), `REDIS_HOST` (`localhost`) and `REDIS_PORT` (`6379`).
 
+## Web UI
+
+The browser chat lives in its own module, [`chat-ui/`](chat-ui/README.md). It streams replies and shows every tool call inline and on an activity timeline.
+
+![Chat UI: conversations on the left, the chat with inline tool-call markers in the middle, and the agent activity timeline on the right](docs/images/chat-ui.png) It talks to the agent only through the HTTP contract in [`chat-ui/API.md`](chat-ui/API.md), so the backend can be swapped.
+
+```bash
+mvn -q compile exec:java@server     # chat API on http://localhost:8080/api  (AGENT_HTTP_PORT to change)
+cd chat-ui && npm install && npm run dev   # UI on http://localhost:5173
+```
+
+The server uses the same model, tools and Redis memory as the CLI, so a conversation can be continued from either side (the conversation id is in the UI's URL after `#/c/`). It also keeps a small conversation index in Redis (`chat:conversations`, `chat:conversation:{id}`) for the sidebar. CLI-only conversations aren't listed until they get a message through the server. The UI shows only what is still in the 20-message memory window.
+
 ## Tests
 
 ```bash
 mvn test
 ```
 
-The tests don't need the Compose stack. They start their own Ollama (Testcontainers Ollama module) and Redis containers. The test Ollama container mounts the same `ollama` volume, so it pulls the model only if it isn't there yet. A run takes about 2 minutes on CPU.
+The UI has its own tests: `cd chat-ui && npm test`.
+
+The Java tests don't need the Compose stack. They start their own Ollama (Testcontainers Ollama module) and Redis containers. The test Ollama container mounts the same `ollama` volume, so it pulls the model only if it isn't there yet. A run takes about 2 minutes on CPU.
 
 `ComposeImageTagsTest` checks that `docker-compose.yaml` and the tests use the same image versions (`AgentConfig.OLLAMA_IMAGE`, `AgentConfig.REDIS_IMAGE`). Update both together when you upgrade.
 
