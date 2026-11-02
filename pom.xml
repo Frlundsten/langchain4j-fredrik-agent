@@ -10,6 +10,8 @@
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
+        <!-- Keep parameter names so tools show "a", "operator", "b" to the model instead of arg0..arg2. -->
+        <maven.compiler.parameters>true</maven.compiler.parameters>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.langchain4j>1.23.0</version.langchain4j>
