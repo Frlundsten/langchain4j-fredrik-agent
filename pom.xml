@@ -119,6 +119,15 @@
                 <configuration>
                     <mainClass>org.fl.agent.AgentApp</mainClass>
                 </configuration>
+                <executions>
+                    <!-- mvn -q compile exec:java@server : HTTP chat API for chat-ui -->
+                    <execution>
+                        <id>server</id>
+                        <configuration>
+                            <mainClass>org.fl.agent.AgentServer</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

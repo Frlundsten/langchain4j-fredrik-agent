@@ -52,7 +52,7 @@ public class AgentApp {
         }
     }
 
-    static boolean redisReachable(AgentConfig config) {
+    public static boolean redisReachable(AgentConfig config) {
         try (Jedis jedis = new Jedis(config.redisHost(), config.redisPort())) {
             jedis.ping();
             return true;
@@ -63,7 +63,7 @@ public class AgentApp {
         }
     }
 
-    static boolean ollamaReachable(AgentConfig config) {
+    public static boolean ollamaReachable(AgentConfig config) {
         try (HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()) {
             HttpResponse<String> response = client.send(
                     HttpRequest.newBuilder(URI.create(config.ollamaBaseUrl() + "/api/tags")).GET().build(),
