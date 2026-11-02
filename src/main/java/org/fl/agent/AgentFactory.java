@@ -5,7 +5,9 @@ import dev.langchain4j.community.store.memory.chat.redis.StoreType;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 
@@ -23,6 +25,17 @@ public final class AgentFactory {
      */
     public static OllamaChatModel.OllamaChatModelBuilder chatModelBuilder(String baseUrl) {
         return OllamaChatModel.builder()
+                .baseUrl(baseUrl)
+                .modelName(AgentConfig.MODEL_NAME)
+                .think(true)
+                .returnThinking(false)
+                .numCtx(AgentConfig.NUM_CTX)
+                .timeout(Duration.ofMinutes(5));
+    }
+
+    /** Streaming counterpart of {@link #chatModelBuilder(String)}, with identical settings. */
+    public static OllamaStreamingChatModel.OllamaStreamingChatModelBuilder streamingChatModelBuilder(String baseUrl) {
+        return OllamaStreamingChatModel.builder()
                 .baseUrl(baseUrl)
                 .modelName(AgentConfig.MODEL_NAME)
                 .think(true)
@@ -50,6 +63,14 @@ public final class AgentFactory {
     public static Assistant assistant(ChatModel model, ChatMemoryStore store, AgentTools tools) {
         return AiServices.builder(Assistant.class)
                 .chatModel(model)
+                .chatMemoryProvider(memoryProvider(store))
+                .tools(tools)
+                .build();
+    }
+
+    public static StreamingAssistant streamingAssistant(StreamingChatModel model, ChatMemoryStore store, AgentTools tools) {
+        return AiServices.builder(StreamingAssistant.class)
+                .streamingChatModel(model)
                 .chatMemoryProvider(memoryProvider(store))
                 .tools(tools)
                 .build();
